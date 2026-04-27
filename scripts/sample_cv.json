@@ -1,0 +1,44 @@
+{
+  "user_id": "hamza_dev",
+  "name": "Hamza",
+  "bio": "I'm a full-stack developer and AI enthusiast based in Faisalabad, Pakistan. I love building products that combine great UX with intelligent backends. Currently obsessed with LangGraph and agentic AI systems.",
+  "skills": [
+    "Python", "FastAPI", "Next.js", "TypeScript", "LangChain", "LangGraph",
+    "Chroma", "PostgreSQL", "Docker", "Git", "React", "Node.js"
+  ],
+  "projects": [
+    {
+      "title": "AgentFolio",
+      "description": "An AI-powered portfolio platform where a LangGraph agent answers questions about you in first person, using your CV and LinkedIn data as RAG context.",
+      "tech": ["LangGraph", "LangChain", "Chroma", "FastAPI", "Next.js"],
+      "url": "https://github.com/hamza/agentfolio"
+    },
+    {
+      "title": "Smart Expense Tracker",
+      "description": "A mobile-friendly expense tracker with NLP-based categorisation. Users can describe an expense in plain English and the app auto-categorises it.",
+      "tech": ["React Native", "Python", "OpenAI API"],
+      "url": "https://github.com/hamza/expense-tracker"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Freelance",
+      "role": "Full-Stack Developer",
+      "duration": "2022 – Present",
+      "description": "Built and shipped 10+ web applications for clients across Pakistan and the Middle East. Specialised in React/Next.js frontends and FastAPI/Django backends."
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Engineering and Technology, Lahore",
+      "degree": "BSc Computer Science",
+      "year": "2024"
+    }
+  ],
+  "contact": {
+    "email": "hamza@example.com",
+    "linkedin": "https://linkedin.com/in/hamza-dev",
+    "github": "https://github.com/hamza-dev",
+    "website": "https://hamza.dev"
+  }
+}
