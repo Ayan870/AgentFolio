@@ -1,0 +1,5 @@
+cd C:\Users\user\AgentFolio\backend
+
+python -m venv venv
+
+venv\Scripts\activate
