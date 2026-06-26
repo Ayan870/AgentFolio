@@ -1,0 +1,50 @@
+{
+  "user_id": "ayan",
+  "name": "Muhammad Ayan Ali",
+  "bio": "Student AI Engineer specializing in advanced agent orchestration and model training. I don't just build standalone AI agents\u2014I architect the multi-step workflows and cohesive systems required to turn unpredictable LLMs into reliable, production-grade automation.",
+  "location": "Faisalabad, Pakistan",
+  "github_url": "https://github.com/Ayan870",
+  "website": "https://github.com/Ayan870",
+  "linkedin_url": "https://www.linkedin.com/in/muhammad-ayan-ali-3360583ab/",
+  "skills": [
+    "Python",
+    "RAG"
+  ],
+  "projects": [
+    {
+      "title": "Alpha PIng",
+      "description": "AlphaPing is an AI-powered workflow automation platform that combines intelligent agents, human approvals, and real-time notifications to streamline business processes. It enables organizations to automate complex workflows while maintaining transparency, control, and reliability.",
+      "github_url": "https://github.com/Ayan870/AlphaPing",
+      "live_url": "",
+      "tech": [
+        "FastAPI",
+        "Langgraph",
+        "RAG",
+        "React",
+        "python"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "company": "",
+      "role": "",
+      "duration": "",
+      "description": ""
+    }
+  ],
+  "education": [
+    {
+      "institution": "Superior University",
+      "degree": "BS computer science",
+      "year": "2024"
+    }
+  ],
+  "story": {
+    "how_started": "When I was a student 8th grade I just wanted to work with computers and write code. It just look good to me a person writing code at laptop. I have a big brother who introduced me to coding in 10th grade and I started to learn my first programming language python. In university I started learning Machine learning and AI. I did 2 courses on udemy 1 on LLM engineering and other on AI Agents and that just hooked me with AI. I realized how facintain the fiel of\u00a0 AI is\u00a0",
+    "biggest_win": "My biggest project win has been building AlphaPing, an AI-powered workflow automation platform based on a multi-agent architecture. I designed and implemented multiple specialized AI agents that collaborate to execute complex workflows, handle approvals, manage state, and deliver real-time updates.",
+    "biggest_failure": "When I built my very first AI project, I was completely flying blind. I had minimal technical knowledge, a messy codebase, and honestly, I barely understood the architecture of what I was trying to create. It was a chaotic failure on paper, but it was the best thing that ever happened to me. It forced me to stop guessing, dive deep into the fundamentals.",
+    "currently_obsessed": "I am completely obsessed with the architecture of Large Language Models and AI systems. There is something incredibly fascinating about understanding the inner workings of how LLMs reason. Lately, I\u2019ve been diving deep into LangGraph, and mastering AI agent orchestration has become my absolute favorite challenge.",
+    "looking_for": "I am looking for building AI agents "
+  }
+}

@@ -1,24 +1,21 @@
 from fastapi import APIRouter, HTTPException
-from app.models.schemas import ChatRequest, ChatResponse, IngestRequest, IngestResponse
+from app.models.schemas import ChatRequest, ChatResponse, IngestRequest, IngestResponse, OnboardingData
 from app.agents.graph.agent_graph import agent_graph
-from app.services.ingestion import ingest_cv
+from app.services.ingestion import ingest_cv, ingest_onboarding
+from app.models.schemas import CVData
 import uuid
+import json
+import os
 
 router = APIRouter()
 
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
-    """
-    Send a message to the user's AI agent.
-    The agent retrieves relevant CV/LinkedIn data and responds in first person.
-    """
     session_id = request.session_id or str(uuid.uuid4())
-
-    # Build initial state for the graph
     initial_state = {
         "user_id": request.user_id,
-        "user_name": request.user_id,  # Will be replaced with real name after Phase 2 auth
+        "user_name": request.user_id,
         "message": request.message,
         "session_id": session_id,
         "history": [m.model_dump() for m in request.history],
@@ -28,7 +25,6 @@ async def chat(request: ChatRequest):
         "reply": "",
         "sources": [],
     }
-
     try:
         result = await agent_graph.ainvoke(initial_state)
     except Exception as e:
@@ -41,21 +37,39 @@ async def chat(request: ChatRequest):
     )
 
 
-@router.post("/ingest", response_model=IngestResponse)
-async def ingest(request: IngestRequest):
+@router.post("/onboard")
+async def onboard(data: OnboardingData):
     """
-    Ingest CV data for a user — chunks, embeds, and stores in their Chroma collection.
+    Receive onboarding form data, save it, and ingest into Chroma.
     """
     try:
-        count = ingest_cv(request.data)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ingestion error: {str(e)}")
+        # Save raw data as JSON
+        os.makedirs("./data/profiles", exist_ok=True)
+        profile_path = f"./data/profiles/{data.user_id}.json"
+        with open(profile_path, "w") as f:
+            json.dump(data.model_dump(), f, indent=2)
 
-    return IngestResponse(
-        success=True,
-        chunks_indexed=count,
-        message=f"Successfully indexed {count} chunks for user {request.user_id}",
-    )
+        # Ingest into Chroma
+        count = ingest_onboarding(data)
+
+        return {
+            "success": True,
+            "chunks_indexed": count,
+            "agent_url": f"/agent/{data.user_id}",
+            "message": f"Agent is live at /agent/{data.user_id}"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Onboarding error: {str(e)}")
+
+
+@router.get("/profile/{user_id}")
+async def get_profile(user_id: str):
+    """Load existing profile data for editing."""
+    profile_path = f"./data/profiles/{user_id}.json"
+    if not os.path.exists(profile_path):
+        raise HTTPException(status_code=404, detail="Profile not found")
+    with open(profile_path) as f:
+        return json.load(f)
 
 
 @router.get("/health")

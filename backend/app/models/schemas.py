@@ -28,15 +28,58 @@ class ChatResponse(BaseModel):
 
 
 class CVData(BaseModel):
-    """Schema for manual CV data ingestion."""
     user_id: str
     name: str
     bio: str
     skills: list[str] = []
-    projects: list[dict] = []   # {title, description, tech, url}
-    experience: list[dict] = [] # {company, role, duration, description}
-    education: list[dict] = []  # {institution, degree, year}
-    contact: dict = {}          # {email, linkedin, github, website}
+    projects: list[dict] = []
+    experience: list[dict] = []
+    education: list[dict] = []
+    contact: dict = {}
+
+
+class ProjectItem(BaseModel):
+    title: str
+    description: str
+    github_url: str = ""
+    live_url: str = ""
+    tech: list[str] = []
+
+
+class ExperienceItem(BaseModel):
+    company: str
+    role: str
+    duration: str
+    description: str
+
+
+class EducationItem(BaseModel):
+    institution: str
+    degree: str
+    year: str
+
+
+class StoryAnswers(BaseModel):
+    how_started: str = ""
+    biggest_win: str = ""
+    biggest_failure: str = ""
+    currently_obsessed: str = ""
+    looking_for: str = ""
+
+
+class OnboardingData(BaseModel):
+    user_id: str
+    name: str
+    bio: str
+    location: str = ""
+    github_url: str = ""
+    website: str = ""
+    linkedin_url: str = ""
+    skills: list[str] = []
+    projects: list[ProjectItem] = []
+    experience: list[ExperienceItem] = []
+    education: list[EducationItem] = []
+    story: StoryAnswers = StoryAnswers()
 
 
 class IngestRequest(BaseModel):

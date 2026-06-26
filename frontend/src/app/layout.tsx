@@ -6,14 +6,28 @@ export const metadata: Metadata = {
   description: "Your AI-powered portfolio agent",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: any;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-      <html lang="en">
-        <body className="bg-gray-950 text-white antialiased">{children}</body>
-      </html>
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body
+        style={{
+          fontFamily: "'Geist', ui-sans-serif, system-ui, sans-serif",
+          background: "var(--page-bg, #08080a)",
+          color: "var(--text-body, #d1d5db)",
+          minHeight: "100vh",
+          WebkitFontSmoothing: "antialiased",
+        }}
+      >
+        {children}
+      </body>
+    </html>
   );
 }

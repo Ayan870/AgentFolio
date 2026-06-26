@@ -1,34 +1,58 @@
+"use client";
 import { Message } from "@/types";
-import { clsx } from "clsx";
 
-export default function ChatBubble({ message }: { message: Message }) {
+interface Props {
+  message: Message;
+  agentInitials: string;
+}
+
+export default function ChatBubble({ message, agentInitials }: Props) {
   const isUser = message.role === "user";
 
   return (
-    <div className={clsx("flex w-full mb-4", isUser ? "justify-end" : "justify-start")}>
+    <div style={{ display: "flex", justifyContent: isUser ? "flex-end" : "flex-start", gap: "0.75rem" }}>
       {!isUser && (
-        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0 mt-1">
-          AI
+        <div style={{
+          width: "34px", height: "34px", flexShrink: 0,
+          borderRadius: "0.625rem",
+          background: "var(--brand)",
+          display: "grid", placeItems: "center",
+          fontFamily: "Geist Mono, monospace",
+          fontSize: "0.65rem", fontWeight: 700, color: "#000",
+          boxShadow: "0 0 20px -5px rgba(212,255,0,0.5)",
+          marginTop: "2px",
+        }}>
+          {agentInitials}
         </div>
       )}
-      <div className="max-w-[75%]">
-        <div
-          className={clsx(
-            "px-4 py-3 rounded-2xl text-sm leading-relaxed",
-            isUser
-              ? "bg-indigo-600 text-white rounded-br-sm"
-              : "bg-gray-800 text-gray-100 rounded-bl-sm"
-          )}
-        >
+
+      <div style={{ maxWidth: "78%", display: "flex", flexDirection: "column", gap: "0.375rem" }}>
+        <div style={{
+          padding: "0.75rem 1rem",
+          borderRadius: isUser ? "1rem 1rem 0.25rem 1rem" : "1rem 1rem 1rem 0.25rem",
+          fontSize: "0.9rem",
+          lineHeight: 1.6,
+          backdropFilter: "blur(8px)",
+          background: isUser ? "var(--user-bubble-bg)" : "var(--ai-bubble-bg)",
+          border: `1px solid ${isUser ? "var(--user-bubble-border)" : "var(--ai-bubble-border)"}`,
+          boxShadow: isUser ? "var(--user-bubble-shadow)" : "none",
+          color: "var(--text-body)",
+        }}>
           {message.content}
         </div>
+
         {message.sources && message.sources.length > 0 && (
-          <div className="mt-1 flex gap-2 flex-wrap">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
             {message.sources.map((s) => (
-              <span
-                key={s}
-                className="text-xs text-gray-500 bg-gray-900 px-2 py-0.5 rounded-full border border-gray-700"
-              >
+              <span key={s} style={{
+                padding: "0.2rem 0.625rem",
+                borderRadius: "999px",
+                border: "1px solid var(--tag-border)",
+                background: "var(--tag-bg)",
+                fontFamily: "Geist Mono, monospace",
+                fontSize: "0.65rem",
+                color: "var(--text-muted)",
+              }}>
                 {s}
               </span>
             ))}
