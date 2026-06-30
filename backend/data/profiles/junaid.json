@@ -1,0 +1,53 @@
+{
+  "user_id": "junaid",
+  "name": "Junaid Ullah",
+  "bio": "Passionate and detail-oriented Full-Stack Web Developer with a strong foundation in building robust, user-centric web applications. Combining creative front-end design with scalable back-end logic, I specialize in turning complex ideas into clean, functional code.\ud83d\ude80 Core SkillsFront-End: HTML5 \u2022 CSS3 \u2022 JavaScript (ES6+)Back-End: Python \u2022 Django FrameworkDatabases & Tools: PostgreSQL \u2022 SQLite \u2022 Git & GitHub \u2022 RESTful APIsDesign & UI: Responsive Web Design \u2022 Bootstrap \u2022 Tailwind CSS\ud83d\udcbc Professional ExperienceJunior Full-Stack Developer | PixelCraft Solutions (2024 \u2013 Present)Developed and maintained responsive business web applications using Django and vanilla JavaScript.Optimized front-end performance, reducing page load times by 20% through clean HTML/CSS structuring.Designed and integrated secure RESTful APIs to connect user interfaces with back-end databases.Freelance Web Developer | Self-Employed (2022 \u2013 2024)Built custom e-commerce and portfolio websites for local clients using HTML, CSS, and JavaScript.Implemented secure user authentication and content management systems utilizing the Django admin ecosystem.\ud83c\udf93 Education & CertificationsBachelor of Science in Computer Science | University of Engineering & TechnologyCertified Professional Django Developer | Meta (Coursera)",
+  "location": "Sangla , Pakistan",
+  "github_url": "https://github.com/Junaid",
+  "website": "https://Junaid.com",
+  "linkedin_url": "https://linkedin.com/Junaid",
+  "skills": [
+    "python",
+    "django",
+    "html",
+    "css",
+    "js"
+  ],
+  "projects": [
+    {
+      "title": "Web site",
+      "description": "Project Overview:ChronoCraft is a fully functional, responsive e-commerce web application dedicated to luxury and minimalist timepieces. The platform delivers a seamless, high-end shopping experience, featuring a dynamic product catalog, secure user authentication, and a streamlined checkout pipeline.Key Features Implemented:Dynamic Catalog & Filtering: Built an advanced filtering system using JavaScript and Django ORM, allowing users to instantly sort watches by brand, price, movement type, and strap material.Custom Shopping Cart: Developed a persistent shopping cart using JavaScript session storage and back-end cookies, enabling users to add, modify, or remove items without page reloads.Robust User Accounts: Implemented a secure authentication system using Django's built-in framework, featuring user registration, profile management, and order history tracking.Admin Dashboard: Customized the Django admin panel into a comprehensive vendor dashboard to easily manage inventory, track stock levels, and update order statuses.Fully Responsive UI: Designed a sleek, \"dark-luxury\" aesthetic using custom CSS and Bootstrap, ensuring a pixel-perfect experience across mobile, tablet, and desktop screens.",
+      "github_url": "https://github.com/watchsell",
+      "live_url": "",
+      "tech": []
+    }
+  ],
+  "experience": [
+    {
+      "company": "",
+      "role": "",
+      "duration": "",
+      "description": ""
+    }
+  ],
+  "education": [
+    {
+      "institution": "UET Lahore",
+      "degree": "BSCS Computer science",
+      "year": "2026"
+    }
+  ],
+  "story": {
+    "how_started": "",
+    "biggest_win": "",
+    "biggest_failure": "",
+    "currently_obsessed": "",
+    "looking_for": ""
+  },
+  "avatar_url": "/data/avatars/junaid.jpeg",
+  "settings": {
+    "tone": "professional",
+    "response_length": "short",
+    "model": "meta-llama/llama-3-8b-instruct"
+  }
+}
