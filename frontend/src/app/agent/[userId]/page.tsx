@@ -22,6 +22,7 @@ export default function AgentPage() {
   const { messages, isLoading, error, send, reset } = useChat(userId);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState<Theme>("dark");
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -95,6 +96,11 @@ export default function AgentPage() {
           @media (max-width: 1279px) {
             .left-rail, .right-rail { display: none !important; }
           }
+          @keyframes signal-bounce {
+            0% { transform: scaleY(0.25); }
+            50% { transform: scaleY(1.15); }
+            100% { transform: scaleY(0.4); }
+          }
         `}</style>
 
         {/* LEFT RAIL */}
@@ -159,29 +165,29 @@ export default function AgentPage() {
           <div style={{
             borderRadius: "1rem",
             border: "1px solid var(--card-border)",
-            background: "var(--card-bg)",
+            background: "var(--suggestion-wrap)",
             backdropFilter: "blur(16px)",
             padding: "1.25rem",
           }}>
-            <p style={{ fontFamily: "Geist Mono, monospace", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: "0.75rem" }}>Recent</p>
-            {["Show me your projects", "What models do you work with?", "Walk me through your stack"].map((q) => (
-              <button key={q} onClick={() => send(q)} style={{
-                display: "block", width: "100%", textAlign: "left",
-                padding: "0.5rem 0.625rem",
-                borderRadius: "0.5rem",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "0.8rem",
-                color: "var(--text-muted)",
-                marginBottom: "0.25rem",
-                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-                transition: "background 0.15s, color 0.15s",
-              }}
-                onMouseEnter={e => { (e.target as HTMLElement).style.background = "var(--sidebar-recent-hover)"; (e.target as HTMLElement).style.color = "var(--text-body)"; }}
-                onMouseLeave={e => { (e.target as HTMLElement).style.background = "transparent"; (e.target as HTMLElement).style.color = "var(--text-muted)"; }}
-              >{q}</button>
-            ))}
+            <p style={{ fontFamily: "Geist Mono, monospace", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--brand)", marginBottom: "0.75rem" }}>Recent</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {["Show me your projects", "What models do you work with?", "Walk me through your stack"].map((q) => (
+                <button key={q} onClick={() => send(q)} style={{
+                  textAlign: "left",
+                  padding: "0.625rem 0.875rem",
+                  borderRadius: "0.625rem",
+                  border: "1px solid var(--card-border)",
+                  background: "var(--card-bg)",
+                  color: "var(--text-body)",
+                  fontSize: "0.78rem",
+                  cursor: "pointer",
+                  transition: "border-color 0.15s",
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(212,255,0,0.4)")}
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--card-border)")}
+                >{q}</button>
+              ))}
+            </div>
           </div>
         </aside>
 
@@ -373,7 +379,7 @@ export default function AgentPage() {
             </div>
 
             {/* Input */}
-            <ChatInput onSend={send} disabled={isLoading} />
+            <ChatInput onSend={send} disabled={isLoading} onChange={(val) => setIsTyping(val.trim().length > 0)} />
           </div>
         </main>
 
@@ -417,34 +423,6 @@ export default function AgentPage() {
             </div>
           </div>
 
-          {/* Suggested */}
-          <div style={{
-            borderRadius: "1rem",
-            border: "1px solid var(--card-border)",
-            background: "var(--suggestion-wrap)",
-            backdropFilter: "blur(16px)",
-            padding: "1.25rem",
-          }}>
-            <p style={{ fontFamily: "Geist Mono, monospace", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--brand)", marginBottom: "0.75rem" }}>Suggested</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {SUGGESTED.slice(0, 3).map(q => (
-                <button key={q} onClick={() => send(q)} style={{
-                  textAlign: "left",
-                  padding: "0.625rem 0.875rem",
-                  borderRadius: "0.625rem",
-                  border: "1px solid var(--card-border)",
-                  background: "var(--card-bg)",
-                  color: "var(--text-body)",
-                  fontSize: "0.78rem",
-                  cursor: "pointer",
-                  transition: "border-color 0.15s",
-                }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(212,255,0,0.4)")}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--card-border)")}
-                >{q}</button>
-              ))}
-            </div>
-          </div>
 
           {/* Signal bars */}
           <div style={{
@@ -456,12 +434,18 @@ export default function AgentPage() {
           }}>
             <p style={{ fontFamily: "Geist Mono, monospace", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: "0.75rem" }}>Signal</p>
             <div style={{ display: "flex", alignItems: "flex-end", gap: "3px", height: "48px" }}>
-              {[40, 60, 30, 70, 55, 80, 45, 65, 75, 50, 90, 60].map((h, i) => (
-                <div key={i} style={{
-                  flex: 1, height: `${h}%`, borderRadius: "3px",
-                  background: "linear-gradient(to top, rgba(212,255,0,0.2), rgba(212,255,0,0.6))",
-                }} />
-              ))}
+              {[40, 60, 30, 70, 55, 80, 45, 65, 75, 50, 90, 60].map((h, i) => {
+                const duration = `${0.6 + ((i * 7) % 5) * 0.15}s`;
+                const delay = `${-((i * 3) % 7) * 0.12}s`;
+                return (
+                  <div key={i} style={{
+                    flex: 1, height: `${h}%`, borderRadius: "3px",
+                    background: "linear-gradient(to top, rgba(212,255,0,0.2), rgba(212,255,0,0.6))",
+                    transformOrigin: "bottom",
+                    animation: isTyping ? `signal-bounce ${duration} ease-in-out ${delay} infinite alternate` : "none",
+                  }} />
+                );
+              })}
             </div>
           </div>
         </aside>

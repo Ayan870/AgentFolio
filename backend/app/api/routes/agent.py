@@ -72,6 +72,35 @@ async def get_profile(user_id: str):
         return json.load(f)
 
 
+@router.get("/agents")
+async def list_agents():
+    """Return all public agent profiles for the feed."""
+    profiles_dir = "./data/profiles"
+    if not os.path.exists(profiles_dir):
+        return []
+    
+    agents = []
+    for filename in os.listdir(profiles_dir):
+        if filename.endswith(".json"):
+            with open(f"{profiles_dir}/{filename}") as f:
+                try:
+                    data = json.load(f)
+                    agents.append({
+                        "user_id": data.get("user_id"),
+                        "name": data.get("name"),
+                        "bio": data.get("bio", ""),
+                        "location": data.get("location", ""),
+                        "skills": data.get("skills", [])[:5],
+                        "github_url": data.get("github_url", ""),
+                        "website": data.get("website", ""),
+                        "avatar_url": data.get("avatar_url"),
+                    })
+                except:
+                    pass
+    
+    return agents
+
+
 @router.get("/health")
 async def health():
     return {"status": "ok", "service": "agentfolio-backend"}

@@ -24,7 +24,7 @@ def main():
 
     cv = CVData(**raw)
     count = ingest_cv(cv)
-    print(f"\n✅ Done — {count} chunks indexed for user: {cv.user_id}")
+    print(f"\n[Success] Done - {count} chunks indexed for user: {cv.user_id}")
     print("You can now POST to /api/v1/chat with:")
     print(f'  {{"user_id": "{cv.user_id}", "message": "Tell me about your projects"}}')
 

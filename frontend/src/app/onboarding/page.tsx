@@ -1,6 +1,8 @@
 "use client";
+import { getToken } from "@/lib/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1";
@@ -58,13 +60,29 @@ export default function OnboardingPage() {
             const payload = {
                 ...basics,
                 skills,
-                projects: projects.map(p => ({ ...p, tech: p.tech.split(",").map(t => t.trim()).filter(Boolean) })),
+                projects: projects.map(p => ({
+                    ...p,
+                    tech: p.tech.split(",").map((t: string) => t.trim()).filter(Boolean)
+                })),
                 experience,
                 education,
                 story,
             };
+
             await axios.post(`${API_URL}/onboard`, payload);
-            router.push(`/agent/${basics.user_id}`);
+
+            // Link agent to logged-in account if token exists
+            const token = getToken();
+            if (token) {
+                await axios.post(
+                    `${API_URL}/auth/link-agent`,
+                    { user_id: basics.user_id },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                router.push("/dashboard");
+            } else {
+                router.push(`/agent/${basics.user_id}`);
+            }
         } catch (e: any) {
             setError(e.response?.data?.detail || "Something went wrong");
         } finally {
@@ -76,8 +94,16 @@ export default function OnboardingPage() {
     const labelClass = "block text-gray-400 text-xs mb-1 uppercase tracking-wide";
 
     return (
-        <div className="min-h-screen bg-gray-950 text-white px-4 py-12">
-            <div className="max-w-2xl mx-auto">
+        <div className="min-h-screen bg-[#0a0a0a] text-white px-4 py-12">
+            {/* Nav */}
+            <nav className="fixed top-0 left-0 right-0 border-b border-[#1a1a1a] px-6 py-4 flex items-center justify-between bg-[#0a0a0a]/90 backdrop-blur-sm z-20">
+                <Link href="/" className="font-black text-xl">
+                    <span className="text-white">Agent</span>
+                    <span className="text-[#c8ff00]">Folio</span>
+                </Link>
+            </nav>
+
+            <div className="max-w-2xl mx-auto mt-16">
                 {/* Header */}
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold mb-2">Build Your Agent 🤖</h1>
