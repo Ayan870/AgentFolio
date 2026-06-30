@@ -104,3 +104,25 @@ async def list_agents():
 @router.get("/health")
 async def health():
     return {"status": "ok", "service": "agentfolio-backend"}
+
+@router.get("/settings/{user_id}")
+async def get_settings(user_id: str):
+    profile_path = f"./data/profiles/{user_id}.json"
+    if not os.path.exists(profile_path):
+        raise HTTPException(status_code=404, detail="Profile not found")
+    with open(profile_path) as f:
+        data = json.load(f)
+    return data.get("settings", {"tone": "professional", "response_length": "medium", "model": "meta-llama/llama-3-8b-instruct"})
+
+
+@router.put("/settings/{user_id}")
+async def update_settings(user_id: str, settings: dict):
+    profile_path = f"./data/profiles/{user_id}.json"
+    if not os.path.exists(profile_path):
+        raise HTTPException(status_code=404, detail="Profile not found")
+    with open(profile_path) as f:
+        data = json.load(f)
+    data["settings"] = settings
+    with open(profile_path, "w") as f:
+        json.dump(data, f, indent=2)
+    return {"success": True, "settings": settings}

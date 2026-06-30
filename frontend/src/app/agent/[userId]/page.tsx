@@ -5,6 +5,7 @@ import { useChat } from "@/hooks/useChat";
 import ChatBubble from "@/components/chat/ChatBubble";
 import ChatInput from "@/components/chat/ChatInput";
 import TypingIndicator from "@/components/chat/TypingIndicator";
+import axios from "axios";
 
 const SUGGESTED = [
   "Tell me about your projects",
@@ -17,12 +18,15 @@ const STACK_TAGS = ["Python", "FastAPI", "LangGraph", "Next.js", "Chroma", "Dock
 
 type Theme = "dark" | "light";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1";
+
 export default function AgentPage() {
   const { userId } = useParams<{ userId: string }>();
   const { messages, isLoading, error, send, reset } = useChat(userId);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState<Theme>("dark");
   const [isTyping, setIsTyping] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -32,7 +36,14 @@ export default function AgentPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  const displayName = userId.replace(/_/g, " ");
+  useEffect(() => {
+    if (!userId) return;
+    axios.get(`${API_URL}/profile/${userId}`)
+      .then(res => setProfile(res.data))
+      .catch(err => console.error("Failed to load profile:", err));
+  }, [userId]);
+
+  const displayName = profile?.name || userId.replace(/_/g, " ");
 
   return (
     <div
@@ -115,17 +126,29 @@ export default function AgentPage() {
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
               <div style={{ position: "relative" }}>
-                <div style={{
-                  width: "40px", height: "40px",
-                  borderRadius: "0.625rem",
-                  background: "var(--brand)",
-                  display: "grid", placeItems: "center",
-                  fontFamily: "Geist Mono, monospace",
-                  fontSize: "0.7rem", fontWeight: 700, color: "#000",
-                  letterSpacing: "0.05em",
-                }}>
-                  {displayName.slice(0, 2).toUpperCase()}
-                </div>
+                {profile?.avatar_url ? (
+                  <img
+                    src={`${API_URL.replace("/api/v1", "")}${profile.avatar_url}`}
+                    alt={displayName}
+                    style={{
+                      width: "40px", height: "40px",
+                      borderRadius: "0.625rem",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <div style={{
+                    width: "40px", height: "40px",
+                    borderRadius: "0.625rem",
+                    background: "var(--brand)",
+                    display: "grid", placeItems: "center",
+                    fontFamily: "Geist Mono, monospace",
+                    fontSize: "0.7rem", fontWeight: 700, color: "#000",
+                    letterSpacing: "0.05em",
+                  }}>
+                    {displayName.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
                 <div style={{
                   position: "absolute", bottom: "-2px", right: "-2px",
                   width: "10px", height: "10px", borderRadius: "50%",
@@ -153,7 +176,11 @@ export default function AgentPage() {
             padding: "1.25rem",
           }}>
             <p style={{ fontFamily: "Geist Mono, monospace", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: "1rem" }}>System</p>
-            {[["Model", "agentfolio-1"], ["Context", "128k"], ["Retrieval", "Chroma"], ["Region", "local"]].map(([k, v]) => (
+            {[
+              ["Model", profile?.settings?.model ? profile.settings.model.split("/").pop() : "llama-3-8b"],
+              ["Context", "128k"],
+              ["Retrieval", "Chroma"]
+            ].map(([k, v]) => (
               <div key={k} style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", fontSize: "0.8rem" }}>
                 <span style={{ fontFamily: "Geist Mono, monospace", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--text-muted)" }}>{k}</span>
                 <span style={{ fontFamily: "Geist Mono, monospace", fontWeight: 500, color: "var(--text-title)" }}>{v}</span>
@@ -171,8 +198,8 @@ export default function AgentPage() {
           }}>
             <p style={{ fontFamily: "Geist Mono, monospace", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--brand)", marginBottom: "0.75rem" }}>Recent</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {["Show me your projects", "What models do you work with?", "Walk me through your stack"].map((q) => (
-                <button key={q} onClick={() => send(q)} style={{
+              {messages.filter(m => m.role === "user").map(m => m.content).slice(-3).map((q, idx) => (
+                <button key={idx} onClick={() => send(q)} style={{
                   textAlign: "left",
                   padding: "0.625rem 0.875rem",
                   borderRadius: "0.625rem",
@@ -182,6 +209,9 @@ export default function AgentPage() {
                   fontSize: "0.78rem",
                   cursor: "pointer",
                   transition: "border-color 0.15s",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                 }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(212,255,0,0.4)")}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--card-border)")}
@@ -305,17 +335,30 @@ export default function AgentPage() {
                   alignItems: "center", justifyContent: "center",
                   height: "100%", gap: "1.5rem", textAlign: "center",
                 }}>
-                  <div style={{
-                    width: "56px", height: "56px",
-                    borderRadius: "1rem",
-                    background: "var(--brand)",
-                    display: "grid", placeItems: "center",
-                    fontFamily: "Geist Mono, monospace",
-                    fontSize: "0.8rem", fontWeight: 700, color: "#000",
-                    boxShadow: "0 0 30px -5px rgba(212,255,0,0.5)",
-                  }}>
-                    {displayName.slice(0, 2).toUpperCase()}
-                  </div>
+                  {profile?.avatar_url ? (
+                    <img
+                      src={`${API_URL.replace("/api/v1", "")}${profile.avatar_url}`}
+                      alt={displayName}
+                      style={{
+                        width: "56px", height: "56px",
+                        borderRadius: "1rem",
+                        objectFit: "cover",
+                        boxShadow: "0 0 30px -5px rgba(212,255,0,0.5)",
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: "56px", height: "56px",
+                      borderRadius: "1rem",
+                      background: "var(--brand)",
+                      display: "grid", placeItems: "center",
+                      fontFamily: "Geist Mono, monospace",
+                      fontSize: "0.8rem", fontWeight: 700, color: "#000",
+                      boxShadow: "0 0 30px -5px rgba(212,255,0,0.5)",
+                    }}>
+                      {displayName.slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
                   <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", maxWidth: "340px" }}>
                     Hi! I&apos;m <strong style={{ color: "var(--text-body)", textTransform: "capitalize" }}>{displayName}</strong>&apos;s AI agent.
                     Ask me about projects, skills, or experience.

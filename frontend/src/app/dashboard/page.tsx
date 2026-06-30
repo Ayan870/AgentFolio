@@ -7,10 +7,102 @@ import { getToken, getUser, logout } from "@/lib/auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1";
 
+function AgentSettingsPanel({ userId }: { userId: string }) {
+  const [settings, setSettings] = useState({
+    tone: "professional",
+    response_length: "medium",
+    model: "meta-llama/llama-3-8b-instruct",
+  });
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (!userId) return;
+    axios.get(`${API_URL}/settings/${userId}`)
+      .then(res => setSettings(res.data))
+      .catch(() => {});
+  }, [userId]);
+
+  const save = async () => {
+    setSaving(true);
+    setSaved(false);
+    try {
+      await axios.put(`${API_URL}/settings/${userId}`, settings);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const selectClass = "w-full bg-[#0a0a0a] border border-[#222] text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c8ff00]/50";
+  const labelClass = "text-gray-600 text-xs uppercase tracking-wide block mb-2";
+
+  return (
+    <div className="bg-[#111] border border-[#1e1e1e] rounded-2xl p-6">
+      <h3 className="font-bold text-sm mb-1">🎛️ Agent Settings</h3>
+      <p className="text-gray-700 text-xs mb-5">Tweak how your agent talks and thinks</p>
+
+      <div className="space-y-4">
+        <div>
+          <label className={labelClass}>Tone</label>
+          <select
+            className={selectClass}
+            value={settings.tone}
+            onChange={e => setSettings({ ...settings, tone: e.target.value })}
+          >
+            <option value="professional">Professional</option>
+            <option value="friendly">Friendly</option>
+            <option value="casual">Casual</option>
+            <option value="witty">Witty</option>
+          </select>
+        </div>
+
+        <div>
+          <label className={labelClass}>Response Length</label>
+          <select
+            className={selectClass}
+            value={settings.response_length}
+            onChange={e => setSettings({ ...settings, response_length: e.target.value })}
+          >
+            <option value="short">Short (1-2 sentences)</option>
+            <option value="medium">Medium (default)</option>
+            <option value="detailed">Detailed</option>
+          </select>
+        </div>
+
+        <div>
+          <label className={labelClass}>Model</label>
+          <select
+            className={selectClass}
+            value={settings.model}
+            onChange={e => setSettings({ ...settings, model: e.target.value })}
+          >
+            <option value="meta-llama/llama-3-8b-instruct">Llama 3 8B (fast, default)</option>
+            <option value="mistralai/mistral-7b-instruct">Mistral 7B (balanced)</option>
+            <option value="meta-llama/llama-3.1-70b-instruct">Llama 3.1 70B (smarter, slower)</option>
+          </select>
+        </div>
+
+        <button
+          onClick={save}
+          disabled={saving}
+          className="w-full py-2.5 bg-[#c8ff00] hover:bg-[#d4ff33] disabled:opacity-50 text-black font-bold rounded-xl text-sm transition-all"
+        >
+          {saving ? "Saving..." : saved ? "✓ Saved" : "Save Settings"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
     const router = useRouter();
     const [me, setMe] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [isBioExpanded, setIsBioExpanded] = useState(false);
 
     useEffect(() => {
         const token = getToken();
@@ -154,9 +246,19 @@ export default function DashboardPage() {
                                 </Link>
                             </div>
 
-                            <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
-                                {me?.agent?.bio}
-                            </p>
+                            <div>
+                                <p className={`text-gray-500 text-sm leading-relaxed ${isBioExpanded ? "" : "line-clamp-2"}`}>
+                                    {me?.agent?.bio}
+                                </p>
+                                {me?.agent?.bio && me.agent.bio.length > 120 && (
+                                    <button
+                                        onClick={() => setIsBioExpanded(!isBioExpanded)}
+                                        className="text-xs text-[#c8ff00] hover:text-[#d4ff33] transition-colors mt-1 font-semibold focus:outline-none"
+                                    >
+                                        {isBioExpanded ? "Read Less" : "Read More"}
+                                    </button>
+                                )}
+                            </div>
 
                             {/* Skills */}
                             {me?.agent?.skills?.length > 0 && (
@@ -215,6 +317,9 @@ export default function DashboardPage() {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Settings */}
+                        <AgentSettingsPanel userId={me?.user_id} />
 
                     </div>
                 ) : (

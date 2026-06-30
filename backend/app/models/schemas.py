@@ -67,6 +67,12 @@ class StoryAnswers(BaseModel):
     looking_for: str = ""
 
 
+class AgentSettings(BaseModel):
+    tone: str = "professional"  # professional | friendly | casual | witty
+    response_length: str = "medium"  # short | medium | detailed
+    model: str = "meta-llama/llama-3-8b-instruct"
+
+
 class OnboardingData(BaseModel):
     user_id: str
     name: str
@@ -80,6 +86,7 @@ class OnboardingData(BaseModel):
     experience: list[ExperienceItem] = []
     education: list[EducationItem] = []
     story: StoryAnswers = StoryAnswers()
+    settings: AgentSettings = AgentSettings()
 
 
 class IngestRequest(BaseModel):
